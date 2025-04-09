@@ -5,7 +5,7 @@ import BookingCard from "~/components/BookingCard";
 
 interface Booking {
     id: number;
-    bookingDate: string;
+    bookingDate: Date;
     movie: {
         id: number;
         original_title: string;
