@@ -26,6 +26,9 @@ export default function Navbar() {
                             <Link to="/" className="hover:text-gray-300">
                                 Accueil
                             </Link>
+                            <Link to="/bookings" className="hover:text-gray-300">
+                                Réservations
+                            </Link>
                             <Link to="/logout" className="hover:text-gray-300">
                                 Déconnexion
                             </Link>

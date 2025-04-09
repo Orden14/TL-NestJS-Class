@@ -7,4 +7,5 @@ export default [
     route("login", "pages/Login.tsx"),
     route("register", "pages/Register.tsx"),
     route("logout", "pages/Logout.tsx"),
+    route("bookings", "pages/MyBookings.tsx"),
 ] satisfies RouteConfig;

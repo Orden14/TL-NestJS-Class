@@ -1,16 +1,22 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
 import {Between, Repository} from 'typeorm';
-import { Booking } from './booking.entity';
-import { User } from '../user/user.entity';
+import {Booking} from './booking.entity';
+import {User} from '../user/user.entity';
 import {BookingDto} from "./dto/booking.dto";
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class BookingService {
+    private readonly apiKey: string | undefined;
+
     constructor(
         @InjectRepository(Booking)
         private readonly bookingRepository: Repository<Booking>,
-    ) {}
+        private readonly configService: ConfigService,
+    ) {
+        this.apiKey = this.configService.get<string>('API_KEY');
+    }
 
     async createBooking(bookingDto: BookingDto, user: { id: number }): Promise<Booking> {
         const { movieId, bookingDate } = bookingDto;
@@ -49,8 +55,35 @@ export class BookingService {
         return this.bookingRepository.save(booking);
     }
 
-    async getUserBookings(user: User): Promise<Booking[]> {
-        return this.bookingRepository.find({ where: { id: user.id } });
+    async getUserBookings(user: User): Promise<any[]> {
+        const bookings = await this.bookingRepository.find({ where: { user: { id: user.id } } });
+
+        return await Promise.all(
+            bookings.map(async (booking) => {
+                const movieResponse = await fetch(`https://api.themoviedb.org/3/movie/${booking.movieId}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.apiKey}`,
+                    },
+                });
+
+                if (!movieResponse.ok) {
+                    throw new Error('Failed to fetch movie data');
+                }
+
+                const movieData = await movieResponse.json();
+
+                return {
+                    id: booking.id,
+                    bookingDate: booking.bookingDate,
+                    movie: {
+                        id: movieData.id,
+                        original_title: movieData.title,
+                        release_date: movieData.release_date,
+                        backdrop_path: movieData.backdrop_path,
+                    },
+                };
+            }),
+        );
     }
 
     async cancelBooking(bookingId: number, user: User): Promise<{ message: string }> {
