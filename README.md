@@ -35,3 +35,24 @@ npm start
 ```
 
 Swagger for the API is now available at`http://localhost:8000/api`
+
+## Start the frontend project
+
+Frontend made using ReactJS
+
+1. Move to the frontend folder
+```bash
+cd frontapp
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Run the frontend
+```bash
+npm start
+```
+
+The frontend is now available at `http://localhost:3000`

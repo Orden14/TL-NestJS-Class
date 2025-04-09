@@ -19,6 +19,12 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+    app.enableCors({
+        origin: '*',
+        methods: 'GET,HEAD,POST,PUT,DELETE',
+        credentials: true,
+    });
+
     await app.listen(process.env.PORT ?? 3000);
 }
 
