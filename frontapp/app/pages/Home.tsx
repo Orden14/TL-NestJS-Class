@@ -4,7 +4,7 @@ import { useAuth } from "~/context/AuthContext";
 import { useMovies } from "~/hooks/useMovies";
 import MovieCard from "~/components/MovieCard";
 import BookingModal from "~/components/BookingModal";
-import type {Movie} from "~/types/Movie";
+import type { Movie } from "~/types/Movie";
 
 export default function Home() {
     const { isAuthenticated } = useAuth();
@@ -13,12 +13,15 @@ export default function Home() {
 
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [bookingDate, setBookingDate] = useState<string>("");
+    const [bookingTime, setBookingTime] = useState<string>(""); // Nouvel état pour l'heure
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleBook = async () => {
-        if (!selectedMovie || !bookingDate) return;
+        if (!selectedMovie || !bookingDate || !bookingTime) return;
 
         try {
+            const combinedDateTime = new Date(`${bookingDate}T${bookingTime}`); // Combine la date et l'heure
+
             const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings`, {
                 method: "POST",
                 headers: {
@@ -27,19 +30,21 @@ export default function Home() {
                 },
                 body: JSON.stringify({
                     movieId: selectedMovie.id,
-                    bookingDate: new Date(bookingDate),
+                    bookingDate: combinedDateTime,
                 }),
             });
 
             if (!response.ok) {
-                throw new Error("Erreur lors de la réservation");
+                const errorData = await response.json();
+
+                throw new Error(errorData.message || "Erreur lors de la réservation");
             }
 
             alert("Réservation réussie !");
             setIsModalOpen(false);
             navigate("/");
         } catch (error) {
-            alert("Erreur lors de la réservation");
+            alert(error);
         }
     };
 
@@ -66,6 +71,8 @@ export default function Home() {
                     movieTitle={selectedMovie.original_title}
                     bookingDate={bookingDate}
                     setBookingDate={setBookingDate}
+                    bookingTime={bookingTime}
+                    setBookingTime={setBookingTime}
                     onClose={() => setIsModalOpen(false)}
                     onConfirm={handleBook}
                     today={today}
