@@ -1,0 +1,23 @@
+services:
+    db:
+        image: postgres
+        restart: no
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: pass123
+            POSTGRES_DB: moviebooker
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+    adminer:
+        image: adminer
+        restart: no
+        ports:
+            - "8080:8080"
+        depends_on:
+            - db
+
+volumes:
+    pgdata:
