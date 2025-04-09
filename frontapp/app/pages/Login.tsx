@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "~/context/AuthContext";
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,8 +27,9 @@ export default function Login() {
             }
 
             const data = await response.json();
-            localStorage.setItem("token", data.access_token); // Stocker le JWT
-            navigate("/"); // Rediriger vers la page d'accueil
+            localStorage.setItem("token", data.access_token);
+            login(); // Met à jour le contexte
+            navigate("/");
         } catch (err: any) {
             setError(err.message);
         }

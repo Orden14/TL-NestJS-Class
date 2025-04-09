@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import Navbar from "~/components/Navbar";
 import React from "react";
+import {AuthProvider} from "~/context/AuthContext";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,10 +36,12 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
             <Links />
         </head>
         <body>
-            <Navbar />
-            {children}
-            <ScrollRestoration />
-            <Scripts />
+            <AuthProvider>
+                <Navbar />
+                {children}
+                <ScrollRestoration />
+                <Scripts />
+            </AuthProvider>
         </body>
         </html>
     );
