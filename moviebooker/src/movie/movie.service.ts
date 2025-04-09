@@ -27,4 +27,19 @@ export class MovieService {
 
         return response.data.results;
     }
+
+    async findMoviesByKeyword(keyword: string): Promise<any> {
+        const response = await firstValueFrom(
+            this.httpService.get(`${this.apiUrl}/search/movie`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiKey}`,
+                },
+                params: {
+                    query: keyword,
+                },
+            }),
+        );
+
+        return response.data.results;
+    }
 }
