@@ -9,7 +9,7 @@ export default function Navbar() {
         <nav className="bg-gray-800 text-white">
             <div className="container mx-auto flex items-center justify-between p-4">
                 <Link to="/" className="text-2xl font-bold">
-                    MonSite
+                    MovieBooker
                 </Link>
                 <div className="space-x-4">
                     {!isAuthenticated ? (

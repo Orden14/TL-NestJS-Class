@@ -1,77 +1,76 @@
-import React, {useEffect, useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "~/context/AuthContext";
+import { useMovies } from "~/hooks/useMovies";
+import MovieCard from "~/components/MovieCard";
+import BookingModal from "~/components/BookingModal";
+import type {Movie} from "~/types/Movie";
 
-interface Movie {
-    id: number;
-    original_title: string;
-    release_date: string;
-    backdrop_path: string;
-}
 export default function Home() {
     const { isAuthenticated } = useAuth();
-    const [movies, setMovies] = useState<Movie[]>([]);
-
     const navigate = useNavigate();
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigate("/login");
-        }
-    }, [isAuthenticated, navigate]);
+    const movies = useMovies(isAuthenticated, navigate);
 
-    useEffect(() => {
-        const fetchMovies = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/movies`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
-                if (!response.ok) {
-                    console.log(response);
-                    throw new Error("Erreur lors de la récupération des films");
-                }
-                const data = await response.json();
-                setMovies(data);
-            } catch (error) {
-                console.error(error);
+    const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+    const [bookingDate, setBookingDate] = useState<string>("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleBook = async () => {
+        if (!selectedMovie || !bookingDate) return;
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    movieId: selectedMovie.id,
+                    bookingDate: new Date(bookingDate),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur lors de la réservation");
             }
-        };
 
-        fetchMovies();
-    }, []);
+            alert("Réservation réussie !");
+            setIsModalOpen(false);
+            navigate("/");
+        } catch (error) {
+            alert("Erreur lors de la réservation");
+        }
+    };
+
+    const today = new Date().toISOString().split("T")[0];
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-3xl font-bold mb-4">Liste des films</h1>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {movies.map((movie) => (
-                    <div
+                    <MovieCard
                         key={movie.id}
-                        className="bg-gray-900 shadow-md rounded-lg overflow-hidden"
-                        data-id={movie.id}
-                    >
-                        <img
-                            src={`https://image.tmdb.org/t/p/w440_and_h660_face/${movie.backdrop_path}`}
-                            alt={movie.original_title}
-                            className="w-full h-64 object-cover"
-                        />
-                        <div className="p-4 bg-gray-900">
-                            <h2 className="text-lg font-bold">{movie.original_title}</h2>
-                            <p className="text-gray-600">Sortie : {movie.release_date}</p>
-                            <div className="flex items-center justify-center">
-                                <button
-                                    className="mt-4 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-900"
-                                    onClick={() => console.log(`Réserver le film ID: ${movie.id}`)}
-                                >
-                                    Réserver
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                        movie={movie}
+                        onBook={(movie) => {
+                            setSelectedMovie(movie);
+                            setIsModalOpen(true);
+                        }}
+                    />
                 ))}
             </div>
+
+            {isModalOpen && selectedMovie && (
+                <BookingModal
+                    movieTitle={selectedMovie.original_title}
+                    bookingDate={bookingDate}
+                    setBookingDate={setBookingDate}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleBook}
+                    today={today}
+                />
+            )}
         </div>
     );
 }
-

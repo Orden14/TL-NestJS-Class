@@ -10,7 +10,7 @@ export class Booking {
     movieId: number;
 
     @Column()
-    bookingDate: string;
+    bookingDate: Date;
 
     @ManyToOne(() => User, (user) => user.bookings, { eager: true })
     user: User;
