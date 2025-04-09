@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
@@ -12,16 +12,25 @@ export class AuthService {
 
     async validateUser(username: string, password: string): Promise<any> {
         const user = await this.userService.findByUsername(username);
-        if (user && (await bcrypt.compare(password, user.password))) {
-            const { password, ...result } = user;
-
-            return result;
+        if (!user) {
+            throw new UnauthorizedException('Invalid username or password');
         }
 
-        return null;
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('Invalid username or password');
+        }
+
+        const { ...result } = user;
+
+        return result;
     }
 
-    async login(user: any) {
+    async login(user: any): Promise<{ access_token: string }> {
+        if (!user?.username || !user?.id) {
+            throw new BadRequestException('Invalid user data');
+        }
+
         const payload = { username: user.username, sub: user.id };
 
         return {
@@ -29,9 +38,18 @@ export class AuthService {
         };
     }
 
-    async register(username: string, password: string) {
+    async register(username: string, password: string): Promise<{ message: string }> {
+        const existingUser = await this.userService.findByUsername(username);
+        if (existingUser) {
+            throw new BadRequestException('Username already exists');
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        return this.userService.create({ username, password: hashedPassword });
+        await this.userService.create({ username, password: hashedPassword });
+
+        return {
+            message: 'User registered successfully',
+        };
     }
 }

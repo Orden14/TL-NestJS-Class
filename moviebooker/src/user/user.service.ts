@@ -19,4 +19,16 @@ export class UserService {
 
         return this.userRepository.save(newUser);
     }
+
+    async getUserFromRequest(req: any): Promise<User> {
+        const userId = req.user.id;
+
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+
+        if (!user) {
+            throw new Error('User not authenticated');
+        }
+
+        return user;
+    }
 }
