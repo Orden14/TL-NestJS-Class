@@ -3,6 +3,9 @@
 By Thomas L.
 Class project for the EFREI NestJS course
 
+Déploiement back : https://tl-nestjs-class.onrender.com/api/
+Déploiement front : https://tl-nest-js-class.vercel.app/
+
 Clone the repository
 ```bash
 git clone https://github.com/Orden14/TL-NestJS-Class.git
