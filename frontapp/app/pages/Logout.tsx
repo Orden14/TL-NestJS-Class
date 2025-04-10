@@ -7,7 +7,7 @@ export default function Logout() {
     const { logout } = useAuth();
 
     useEffect(() => {
-        logout(); // Met à jour le contexte
+        logout();
         navigate("/login");
     }, [logout, navigate]);
 

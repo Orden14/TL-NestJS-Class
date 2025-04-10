@@ -13,14 +13,14 @@ export default function Home() {
 
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
     const [bookingDate, setBookingDate] = useState<string>("");
-    const [bookingTime, setBookingTime] = useState<string>(""); // Nouvel état pour l'heure
+    const [bookingTime, setBookingTime] = useState<string>("");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleBook = async () => {
         if (!selectedMovie || !bookingDate || !bookingTime) return;
 
         try {
-            const combinedDateTime = new Date(`${bookingDate}T${bookingTime}`); // Combine la date et l'heure
+            const combinedDateTime = new Date(`${bookingDate}T${bookingTime}`);
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings`, {
                 method: "POST",

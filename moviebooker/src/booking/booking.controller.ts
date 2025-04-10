@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {ApiBody, ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOperation, ApiTags} from "@nestjs/swagger";
 import {BookingDto} from "./dto/booking.dto";
 import {Booking} from "./booking.entity";
 import {UserService} from "../user/user.service";
@@ -14,8 +14,9 @@ export class BookingController {
         private readonly userService: UserService,
     ) {}
 
-    @ApiOperation({ summary: 'Créer une nouvelle réservation' })
+    @ApiOperation({ summary: 'Create a new booking' })
     @ApiBody({ type: BookingDto })
+    @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Post()
     async createBooking(@Body() bookingDto: BookingDto, @Request() req): Promise<Booking> {
@@ -26,6 +27,7 @@ export class BookingController {
 
     @ApiOperation({ summary: 'Fetch booking list' })
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get()
     async getUserBookings(@Request() req): Promise<Booking[]> {
         return this.bookingService.getUserBookings(req.user);
@@ -33,6 +35,7 @@ export class BookingController {
 
     @ApiOperation({ summary: 'Cancel a booking' })
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Delete(':id')
     async cancelBooking(@Request() req, @Param('id') id: number): Promise<{ message: string }> {
         const authenticatedUser = await this.userService.getUserFromRequest(req);

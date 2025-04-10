@@ -54,6 +54,10 @@ export default function MyBookings() {
         return <div>Chargement...</div>;
     }
 
+    const handleCancel = (id: number) => {
+        setBookings((prevBookings) => prevBookings.filter((booking) => booking.id !== id));
+    };
+
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-3xl font-bold mb-4">Mes Réservations</h1>
@@ -62,7 +66,13 @@ export default function MyBookings() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {bookings.map((booking) => (
-                        <BookingCard key={booking.id} date={booking.bookingDate} movie={booking.movie} />
+                        <BookingCard
+                            key={booking.id}
+                            date={booking.bookingDate}
+                            movie={booking.movie}
+                            bookingId={booking.id}
+                            onCancel={handleCancel}
+                        />
                     ))}
                 </div>
             )}

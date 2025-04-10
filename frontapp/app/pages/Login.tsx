@@ -28,7 +28,7 @@ export default function Login() {
 
             const data = await response.json();
             localStorage.setItem("token", data.access_token);
-            login(); // Met à jour le contexte
+            login();
             navigate("/");
         } catch (err: any) {
             setError(err.message);
