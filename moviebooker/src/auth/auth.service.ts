@@ -10,15 +10,17 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async validateUser(username: string, password: string): Promise<any> {
-        const user = await this.userService.findByUsername(username);
+    async validateUser(email: string, password: string): Promise<any> {
+        const user = await this.userService.findByEmail(email);
+
         if (!user) {
-            throw new UnauthorizedException('Invalid username or password');
+            throw new UnauthorizedException('Email ou mot de passe invalide');
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+
         if (!isPasswordValid) {
-            throw new UnauthorizedException('Invalid username or password');
+            throw new UnauthorizedException('Email ou mot de passe invalide');
         }
 
         const { ...result } = user;
@@ -27,29 +29,29 @@ export class AuthService {
     }
 
     async login(user: any): Promise<{ access_token: string }> {
-        if (!user?.username || !user?.id) {
-            throw new BadRequestException('Invalid user data');
+        if (!user?.email || !user?.id) {
+            throw new BadRequestException('Données de connexion invalides');
         }
 
-        const payload = { username: user.username, sub: user.id };
+        const payload = { email: user.email, sub: user.id };
 
         return {
             access_token: this.jwtService.sign(payload),
         };
     }
 
-    async register(username: string, password: string): Promise<{ message: string }> {
-        const existingUser = await this.userService.findByUsername(username);
+    async register(email: string, password: string): Promise<{ message: string }> {
+        const existingUser = await this.userService.findByEmail(email);
         if (existingUser) {
-            throw new BadRequestException('Username already exists');
+            throw new BadRequestException("Email déjà utilisée");
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await this.userService.create({ username, password: hashedPassword });
+        await this.userService.create({ email, password: hashedPassword });
 
         return {
-            message: 'User registered successfully',
+            message: 'Compte créé avec succès',
         };
     }
 }

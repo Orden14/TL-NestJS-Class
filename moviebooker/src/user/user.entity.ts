@@ -1,6 +1,7 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
-import {Booking} from "../booking/booking.entity";
-import {Exclude} from "class-transformer";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Booking } from "../booking/booking.entity";
+import { Exclude } from "class-transformer";
+import { IsEmail } from "class-validator";
 
 @Entity()
 export class User {
@@ -8,7 +9,8 @@ export class User {
     id: number;
 
     @Column({ unique: true })
-    username: string;
+    @IsEmail()
+    email: string;
 
     @Exclude()
     @Column()

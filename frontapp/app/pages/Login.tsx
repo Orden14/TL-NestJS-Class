@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "~/context/AuthContext";
 
 export default function Login() {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function Login() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
@@ -42,16 +42,16 @@ export default function Login() {
                 {error && <p className="text-sm text-red-600">{error}</p>}
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                            Nom d'utilisateur
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            Email
                         </label>
                         <input
                             type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-2 mt-1 border rounded-md focus:ring focus:ring-blue-300"
-                            placeholder="Votre nom d'utilisateur"
+                            placeholder="Votre email"
                         />
                     </div>
                     <div>

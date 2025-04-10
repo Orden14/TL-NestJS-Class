@@ -11,19 +11,19 @@ export class AuthController {
     @Post('register')
     @ApiBody({ type: RegisterDto })
     async register(@Body() registerDto: RegisterDto): Promise<{ message: string }> {
-        return this.authService.register(registerDto.username, registerDto.password);
+        return this.authService.register(registerDto.email, registerDto.password);
     }
 
     @Post('login')
     @ApiBody({ type: LoginDto })
     async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
         const user = await this.authService.validateUser(
-            loginDto.username,
+            loginDto.email,
             loginDto.password,
         );
 
         if (!user) {
-            throw new Error('Invalid credentials');
+            throw new Error('Nom de compte ou mot de passe invalide');
         }
 
         return this.authService.login(user);

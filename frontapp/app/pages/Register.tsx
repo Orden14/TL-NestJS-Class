@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function Register() {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
@@ -23,7 +23,7 @@ export default function Register() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             if (!response.ok) {
@@ -32,7 +32,7 @@ export default function Register() {
             }
 
             setSuccess("Inscription réussie! Vous pouvez maintenant vous connecter.");
-            setUsername("");
+            setEmail("");
             setPassword("");
             setConfirmPassword("");
         } catch (err: any) {
@@ -48,16 +48,16 @@ export default function Register() {
                 {success && <p className="text-sm text-green-600">{success}</p>}
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                            Nom d'utilisateur
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            email
                         </label>
                         <input
                             type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-2 mt-1 border rounded-md focus:ring focus:ring-blue-300"
-                            placeholder="Votre nom d'utilisateur"
+                            placeholder="Votre email"
                             required
                         />
                     </div>
